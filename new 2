@@ -1,0 +1,60 @@
+OS operating system đc chia thành 3 lớp : app,kernel,hardware and device driver
+kernel translate request from one layer
+Mobile os runnng on linuxkernel
+
+Lolipop đc giới thiệu Android runtime ART
+Android release 2008 , last lolipop version in No 20,2014
+
+Dặc điểm Android:Ease of Programming, 2d3d graphic àn animation,multi language,Web browser, Multi touch, connectivity, Mediaprocessing, sensor support,Storage Capabilipity
+                ,Large Market Share,Abstraction of hardware diferences, open source, free to use, ease to use,google now
+				
+Linux Kernel: base layer, communicate với hardware,responsible for connected device,interact với librabies layer
+Librari:contain librabies,surface manager, openGL,media framework ,Webkid, freetype,ssl, sqlite
+Android Runtime part of librabies,similar JVM, replace for Davilk
+APP framework:manage app for basic functioning, consist:ActivityManager, Pakage manager,...interact with APP layer
+APP layer : consist : application,default and install application,interact with other layer
+SDK software development kit:a package consist all tool requied for development app
+SDK come with:documentation, librabies,sample code,emulator,guides,Androidstudio IDE
+
+
+AVD android virtual device is an android emulator, funtion similar to a mobile device
+AVD consist:hardware features, software,look of the screen
+APP component:Activity,service content provider, broadcast receiver,resource, asset , layout
+
+Activity life cylcle:State:Active , Paused,Stopped, inactive
+                     Method:oncreate,onstart,onresume,onpause,onstop,ondestroy,onrestart
+					 lifrtime:full, visible, active
+Service             :Service form:started, bound
+                     method:context.startservice,onstartcommand,oncreate,context.stopservice,context.bindservice,onbind
+Content provider :provice access data, crud
+                  method :oncreate,query,insert	update , delete, gettype	
+Broadcast receiver:receive and response anoucement
+                  method:abortBroadcast,clearabortBroadcast	,getabortBroadcast,getdebugunregister ,getresultcode,getresultdata
+Resource :static content, animation,drable...
+Assets, similar resource ,file system
+Layout:Linear,Relative,table,absolute,frame,listview, gridview
+Intent: activate component
+intent filter select intent that can manage
+Share preferences:CheckbocPreference,listpreference,edittextreference, define in xml, preferences manager class use to save preferences
+
+Notification:Small icon,Title, detaitext
+            Type:Nomal, basic,expanded progress, headup,lockScreec
+Basic concept of UI:View , layout, ui component
+UI component:input control,input event,menus,actionbar,setting, dialog,addition view(Tab host, Web view,searchview),status notification,toast,search, drag and drop	
+
+UIComponent biuld using view ỏ viewgroup,  view đực biết đến như widgets
+concept of view : focus, listener,atribute:id,settign, padding,size ,view location		
+
+Listener even:conlick,onlongclick,onforcuschange,onkey, ontouch,oncreatecontextmenu
+Adapter là cầu nối giữa ui và source
+Type of Adapter:BaseAdapter,SimpleAdapter,ArrayAdapter,SimpleCursorAdapter,CursorAdapter,ResourceCursorAdapter,SpinerAdapter,SimpleCursorTreeAdapter,CursorTreeAdapter,HeaderViewListAdapter,
+WrapperLstAdapter
+
+
+data Storage option:Share preferences,Internal, External,Sqlitedatabase
+
+Share preferences user key/value to save and get
+package quan trọng sqlite,sqliteopenhelper,sqlitedatabase,cursorsqlexception
+
+method ò curcor:get coulum index,getcoulumnName,getcoulumnNames,getcolumnindexofthrow,getcount,getposition,movetoposition,motofirst,motonext,movetoprevious
+                          					 
