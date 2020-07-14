@@ -10,8 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -22,68 +20,45 @@ import javafx.collections.ObservableList;
  * @author Admin
  */
 public class ClassesModule {
-    
- private StringProperty ClassesId;
-    private StringProperty Classesname;
-    private StringProperty TeacherId;
+
+    private StringProperty classNo;
+    private StringProperty classesName;
 
     public ClassesModule() {
-        this.ClassesId = new SimpleStringProperty();;
-        this.Classesname = new SimpleStringProperty();;
-        this.TeacherId = new SimpleStringProperty();;
+        this.classNo = new SimpleStringProperty();
+        this.classesName = new SimpleStringProperty();
     }
 
-    public StringProperty pgetClassesId() {
-        return ClassesId;
+    public StringProperty pgetClassNo() {
+        return classNo;
     }
-
-    public void psetClassesId(StringProperty ClassesId) {
-        this.ClassesId = ClassesId;
+    public StringProperty psetClassNo(StringProperty classNo) {
+        return this.classNo = classNo;
     }
 
     public StringProperty pgetClassesname() {
-        return Classesname;
-    }
-
-    public void psetClassesname(StringProperty Classesname) {
-        this.Classesname = Classesname;
-    }
-
-    public StringProperty pgetTeacherId() {
-        return TeacherId;
-    }
-
-    public void psetTeacherId(StringProperty TeacherId) {
-        this.TeacherId = TeacherId;
+        return classesName;
     }
     
-    
-
-    public String getId() {
-        return ClassesId.get();
+    public StringProperty psetClassesname(StringProperty className) {
+        return this.classesName = className;
     }
 
-   
-
-    public void setId(String id) {
-        this.ClassesId.set(id);
-    }
- public String getName() {
-        return Classesname.get();
-    }
-    public void setName(String name) {
-        this.Classesname.set(name);
+    public String getClassNo() {
+        return classNo.get();
     }
 
-     public String getTeacherId() {
-        return TeacherId.get();
+    public void setClassNo(String classNo) {
+        this.classNo.set(classNo);
     }
 
-    public void setTeacherId(String id) {
-        this.TeacherId.set(id);
+    public String getClassName() {
+        return classesName.get();
     }
-    
 
+    public void setClassName(String className) {
+        this.classesName.set(className);
+    }
 
     public static ObservableList<ClassesModule> selectAll() {
         ObservableList<ClassesModule> modules = FXCollections.observableArrayList();
@@ -91,12 +66,11 @@ public class ClassesModule {
         try (
                 Connection conn = DbService.getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM classes");) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM class");) {
             while (rs.next()) {
                 ClassesModule m = new ClassesModule();
-                m.setId(rs.getString("classesid"));
-                m.setName(rs.getString("classesname"));
-                m.setTeacherId(rs.getString("teacherid"));
+                m.setClassNo(rs.getString("classNo"));
+                m.setClassName(rs.getString("className"));
                 modules.add(m);
             }
 
@@ -108,17 +82,16 @@ public class ClassesModule {
     }
 
     public static ClassesModule insert(ClassesModule newModule) throws SQLException {
-        String sql = "INSERT into classes (classesid,classesname,teacherid) "
-                + "VALUES (?,?,?,?,?)";
+        String sql = "INSERT into class (classNo, className) "
+                + "VALUES (?,?)";
         ResultSet key = null;
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt
                 = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
 
-            stmt.setString(1, newModule.getId());
-            stmt.setString(2, newModule.getName());
-            stmt.setString(3, newModule.getTeacherId());
+            stmt.setString(2, newModule.getClassNo());
+            stmt.setString(3, newModule.getClassName());
             int rowInserted = stmt.executeUpdate();
 
             if (rowInserted == 1) {
@@ -139,12 +112,12 @@ public class ClassesModule {
     }
 
     public static boolean delete(ClassesModule deleModule) {
-        String sql = "DELETE FROM classes WHERE classesid = ?";
+        String sql = "DELETE FROM class WHERE classNo = ?";
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, deleModule.getId());
+            stmt.setString(1, deleModule.getClassNo());
 
             int rowDeleted = stmt.executeUpdate();
 
@@ -163,16 +136,14 @@ public class ClassesModule {
 
     public static boolean update(ClassesModule updateModule) {
         String sql = "UPDATE classes SET "
-                + "classesname = ? ,"
-                + "teacherid = ? "
-                + "WHERE classesid = ?";
+                + "className = ? "
+                + "WHERE classNo = ?";
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, updateModule.getName());
-             stmt.setString(2, updateModule.getTeacherId());
-            stmt.setString(3, updateModule.getId());
+            stmt.setString(1, updateModule.getClassName());
+            stmt.setString(3, updateModule.getClassNo());
 
             int rowUpdated = stmt.executeUpdate();
 
@@ -190,4 +161,3 @@ public class ClassesModule {
     }
 
 }
-

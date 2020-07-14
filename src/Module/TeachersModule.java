@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,116 +24,140 @@ import javafx.collections.ObservableList;
  * @author Admin
  */
 public class TeachersModule {
-    
- private StringProperty TeacherId;
-    private StringProperty LastName;
-    private StringProperty FirstName;
-    private StringProperty Phone;
-    private StringProperty Email;
-    private StringProperty BirthDate;
+
+    private StringProperty teacherId;
+    private StringProperty name;
+    private StringProperty address;
+    private StringProperty email;
+    private StringProperty phone;
+    private ObjectProperty<LocalDate> birthDay;
+    private StringProperty userId;
 
     public TeachersModule() {
-        this.TeacherId = new SimpleStringProperty();;
-        this.LastName = new SimpleStringProperty();;
-        this.FirstName = new SimpleStringProperty();
-        this.Phone = new SimpleStringProperty();;
-        this.Email = new SimpleStringProperty();
-        this.Email = new SimpleStringProperty();
-    
+        this.teacherId = new SimpleStringProperty();
+        this.name = new SimpleStringProperty();
+        this.address = new SimpleStringProperty();
+        this.email = new SimpleStringProperty();
+        this.phone = new SimpleStringProperty();
+        this.birthDay = new SimpleObjectProperty<>();
+        this.userId = new SimpleStringProperty();
     }
+
+//    Property
     public StringProperty pgetTeacherId() {
-        return TeacherId;
+        return teacherId;
     }
 
     public void psetTeacherId(StringProperty TeacherId) {
-        this.TeacherId = TeacherId;
+        this.teacherId = TeacherId;
     }
 
-    public StringProperty pgetLastName() {
-        return LastName;
+    public StringProperty pgetName() {
+        return name;
     }
 
-    public void psetLastName(StringProperty LastName) {
-        this.LastName = LastName;
+    public void psetName(StringProperty name) {
+        this.name = name;
     }
 
-    public StringProperty pgetFirstName() {
-        return FirstName;
+    public StringProperty pgetAddress() {
+        return address;
     }
 
-    public void psetFirstName(StringProperty FirstName) {
-        this.FirstName = FirstName;
+    public void psetAddress(StringProperty address) {
+        this.address = address;
     }
+
     public StringProperty pgetPhone() {
-        return Phone;
+        return phone;
     }
 
-    public void psetPhone(StringProperty Phone) {
-        this.Phone = Phone;
+    public void psetPhone(StringProperty phone) {
+        this.phone = phone;
     }
+
     public StringProperty pgetEmail() {
-        return Email;
+        return email;
     }
 
-    public void psetEmail(StringProperty Email) {
-        this.Email = Email;
-    }
-    public StringProperty pgetBirthDate() {
-        return BirthDate;
+    public void psetEmail(StringProperty email) {
+        this.email = email;
     }
 
-    public void psetBirthDate(StringProperty BirthDate) {
-        this.BirthDate = BirthDate;
+    public ObjectProperty pgetBirthDay() {
+        return birthDay;
     }
 
-    
-
-    public String getId() {
-        return TeacherId.get();
+    public void psetBirthDay(ObjectProperty birthDay) {
+        this.birthDay = birthDay;
     }
 
-    public String getLastName() {
-        return LastName.get();
+    public StringProperty pgetUserId() {
+        return userId;
     }
 
-    public void setId(String id) {
-        this.TeacherId.set(id);
+    public void psetUserId(StringProperty userId) {
+        this.userId = userId;
     }
 
-    public void setLastName(String name) {
-        this.LastName.set(name);
+//    value
+//    getter
+    public String getTeacherId() {
+        return teacherId.get();
     }
 
-     public String getFirstName() {
-        return FirstName.get();
+    public String getName() {
+        return name.get();
     }
 
-    public void setFirstName(String id) {
-        this.FirstName.set(id);
-    }
-     public String getPhone() {
-        return Phone.get();
+    public String getAddress() {
+        return address.get();
     }
 
-    public void setPhone(String id) {
-        this.Phone.set(id);
-    }
-     public String getEmail() {
-        return Email.get();
+    public String getPhone() {
+        return phone.get();
     }
 
-    public void setEmail(String id) {
-        this.Email.set(id);
-    }
-      public String getBirthDate() {
-        return BirthDate.get();
+    public String getEmail() {
+        return email.get();
     }
 
-    public void setBirthDate(String id) {
-        this.BirthDate.set(id);
+    public LocalDate getBirthDay() {
+        return birthDay.get();
     }
-    
 
+    public String getUserId() {
+        return userId.get();
+    }
+
+//    setter
+    public void setTeacherId(String teacherId) {
+        this.teacherId.set(teacherId);
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public void setAddress(String address) {
+        this.address.set(address);
+    }
+
+    public void setPhone(String phone) {
+        this.phone.set(phone);
+    }
+
+    public void setEmail(String email) {
+        this.email.set(email);
+    }
+
+    public void setBirthDay(LocalDate birthDay) {
+        this.birthDay.set(birthDay);
+    }
+
+    public void setUserId(String userId) {
+        this.userId.set(userId);
+    }
 
     public static ObservableList<TeachersModule> selectAll() {
         ObservableList<TeachersModule> modules = FXCollections.observableArrayList();
@@ -139,16 +165,17 @@ public class TeachersModule {
         try (
                 Connection conn = DbService.getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM teachers");) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM teacher")) {
             while (rs.next()) {
+                java.sql.Date birthDay = (java.sql.Date) rs.getObject("birthday");
                 TeachersModule m = new TeachersModule();
-                m.setId(rs.getString("teacherid"));
-                m.setLastName(rs.getString("lastname"));
-                m.setFirstName(rs.getString("firstname"));
+                m.setTeacherId(rs.getString("teacherId"));
+                m.setName(rs.getString("name"));
+                m.setAddress(rs.getString("address"));
                 m.setPhone(rs.getString("phone"));
                 m.setEmail(rs.getString("email"));
-                m.setBirthDate(rs.getString("birthdate"));
-
+                m.setBirthDay(birthDay.toLocalDate());
+                m.setUserId(rs.getString("userId"));
                 modules.add(m);
             }
 
@@ -158,34 +185,56 @@ public class TeachersModule {
         }
         return modules;
     }
+    
+    public static boolean getDetailTeacher(String teacherId) throws SQLException{
+        String query  = "SELECT * FROM teacher where teacherId = ?"; 
+        try(
+            Connection conn = DbService.getConnection();
+            PreparedStatement stmt
+            = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+            stmt.setString(1, teacherId);
+            TeachersModule teacher = new TeachersModule();
+            ResultSet rs = stmt.executeQuery(); 
+            boolean check = false;
+            while (rs.next()) { 
+                check = true; 
+            } 
+            return check;
+        } catch (Exception e) {
+            System.err.println("Lỗi: "+ e.getMessage());
+            return false;
+        }
+        
+    }
 
-    public static TeachersModule insert(TeachersModule newModule) throws SQLException {
-        String sql = "INSERT into teachers (teacherid,lastname,firstname,phone,email,birthdate) "
-                + "VALUES (?,?,?,?,?,?)";
+    public static boolean insert(TeachersModule newModule) throws SQLException {
+        String sql = "INSERT into teacher (teacherId, name, address, phone, email, birthday, userId) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         ResultSet key = null;
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt
                 = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
 
-            stmt.setString(1, newModule.getId());
-            stmt.setString(2, newModule.getLastName());
-            stmt.setString(3, newModule.getFirstName());
+            stmt.setString(1, newModule.getTeacherId());
+            stmt.setString(2, newModule.getName());
+            stmt.setString(3, newModule.getAddress());
             stmt.setString(4, newModule.getPhone());
-             stmt.setString(5, newModule.getEmail());
-              stmt.setString(6, newModule.getBirthDate());
+            stmt.setString(5, newModule.getEmail());
+            stmt.setDate(6, java.sql.Date.valueOf(newModule.getBirthDay()));
+            stmt.setString(7, newModule.getUserId());
             int rowInserted = stmt.executeUpdate();
 
             if (rowInserted == 1) {
-                return newModule;
+                return true;
             } else {
                 System.err.println("No teachers is inserted");
-                return null;
+                return false;
             }
 
         } catch (Exception e) {
-//            System.err.println(e);
-            return null;
+            System.err.println(e);
+            return false;
         } finally {
             if (key != null) {
                 key.close();
@@ -193,13 +242,18 @@ public class TeachersModule {
         }
     }
 
+    @Override
+    public String toString() {
+        return "TeachersModule{" + "teacherId=" + teacherId.get() + ", name=" + name.get() + ", address=" + address.get() + ", email=" + email.get() + ", phone=" + phone.get() + ", birthDate=" + birthDay.get() + ", userId=" + userId.get() + '}';
+    }
+
     public static boolean delete(TeachersModule deleModule) {
-        String sql = "DELETE FROM teachers WHERE teacherid = ?";
+        String sql = "DELETE FROM teacher WHERE teacherId = ?";
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, deleModule.getId());
+            stmt.setString(1, deleModule.getTeacherId());
 
             int rowDeleted = stmt.executeUpdate();
 
@@ -217,24 +271,25 @@ public class TeachersModule {
     }
 
     public static boolean update(TeachersModule updateModule) {
-        String sql = "UPDATE teachers SET "
-                + "lastname = ? ,"
-                + "firstname = ? ,"
+        String sql = "UPDATE teacher SET "
+                + "name = ? ,"
+                + "address = ? ,"
                 + "phone = ? ,"
                 + "email = ? ,"
-                + "birthdate = ? "
-                + "WHERE teacherid = ?";
+                + "birthday = ? "
+//                + "userId = ?"
+                + "WHERE teacherId = ?";
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, updateModule.getLastName());
-             stmt.setString(2, updateModule.getFirstName());
-              stmt.setString(3, updateModule.getPhone());
-               stmt.setString(4, updateModule.getEmail());
-               stmt.setString(5, updateModule.getBirthDate());
-            stmt.setString(6, updateModule.getId());
-
+            stmt.setString(1, updateModule.getName());
+            stmt.setString(2, updateModule.getAddress());
+            stmt.setString(3, updateModule.getPhone());
+            stmt.setString(4, updateModule.getEmail());
+            stmt.setDate(5, java.sql.Date.valueOf(updateModule.getBirthDay()));
+//            stmt.setString(6, updateModule.getUserId());
+            stmt.setString(6, updateModule.getTeacherId());
             int rowUpdated = stmt.executeUpdate();
 
             if (rowUpdated == 1) {
@@ -251,4 +306,3 @@ public class TeachersModule {
     }
 
 }
-
