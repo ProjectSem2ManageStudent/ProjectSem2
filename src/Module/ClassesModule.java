@@ -23,66 +23,46 @@ import javafx.collections.ObservableList;
  */
 public class ClassesModule {
     
- private StringProperty ClassesId;
-    private StringProperty Classesname;
-    private StringProperty TeacherId;
+ private StringProperty classNo;
+    private StringProperty className;
 
     public ClassesModule() {
-        this.ClassesId = new SimpleStringProperty();;
-        this.Classesname = new SimpleStringProperty();;
-        this.TeacherId = new SimpleStringProperty();;
+        this.classNo = new SimpleStringProperty();;
+        this.className = new SimpleStringProperty();;
     }
 
     public StringProperty pgetClassesId() {
-        return ClassesId;
+        return classNo;
     }
 
     public void psetClassesId(StringProperty ClassesId) {
-        this.ClassesId = ClassesId;
+        this.classNo = ClassesId;
     }
 
     public StringProperty pgetClassesname() {
-        return Classesname;
+        return className;
     }
 
     public void psetClassesname(StringProperty Classesname) {
-        this.Classesname = Classesname;
+        this.className = Classesname;
     }
 
-    public StringProperty pgetTeacherId() {
-        return TeacherId;
-    }
-
-    public void psetTeacherId(StringProperty TeacherId) {
-        this.TeacherId = TeacherId;
-    }
-    
-    
-
-    public String getId() {
-        return ClassesId.get();
+    public String getClassNo() {
+        return classNo.get();
     }
 
    
-
-    public void setId(String id) {
-        this.ClassesId.set(id);
+    public void setClassNo(String classNo) {
+        this.classNo.set(classNo);
     }
- public String getName() {
-        return Classesname.get();
+     public String getClassName() {
+        return className.get();
     }
-    public void setName(String name) {
-        this.Classesname.set(name);
-    }
-
-     public String getTeacherId() {
-        return TeacherId.get();
+    public void setClassName(String className) {
+        this.className.set(className);
     }
 
-    public void setTeacherId(String id) {
-        this.TeacherId.set(id);
-    }
-    
+
 
 
     public static ObservableList<ClassesModule> selectAll() {
@@ -91,12 +71,11 @@ public class ClassesModule {
         try (
                 Connection conn = DbService.getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM classes");) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM class");) {
             while (rs.next()) {
                 ClassesModule m = new ClassesModule();
-                m.setId(rs.getString("classesid"));
-                m.setName(rs.getString("classesname"));
-                m.setTeacherId(rs.getString("teacherid"));
+                m.setClassNo(rs.getString("classNo"));
+                m.setClassName(rs.getString("className"));
                 modules.add(m);
             }
 
@@ -108,17 +87,16 @@ public class ClassesModule {
     }
 
     public static ClassesModule insert(ClassesModule newModule) throws SQLException {
-        String sql = "INSERT into classes (classesid,classesname,teacherid) "
-                + "VALUES (?,?,?,?,?)";
+        String sql = "INSERT into class (classNo,className) "
+                + "VALUES (?,?)";
         ResultSet key = null;
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt
                 = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
 
-            stmt.setString(1, newModule.getId());
-            stmt.setString(2, newModule.getName());
-            stmt.setString(3, newModule.getTeacherId());
+            stmt.setString(1, newModule.getClassNo());
+            stmt.setString(2, newModule.getClassName());
             int rowInserted = stmt.executeUpdate();
 
             if (rowInserted == 1) {
@@ -139,12 +117,12 @@ public class ClassesModule {
     }
 
     public static boolean delete(ClassesModule deleModule) {
-        String sql = "DELETE FROM classes WHERE classesid = ?";
+        String sql = "DELETE FROM class WHERE classNo = ?";
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, deleModule.getId());
+            stmt.setString(1, deleModule.getClassNo());
 
             int rowDeleted = stmt.executeUpdate();
 
@@ -162,17 +140,15 @@ public class ClassesModule {
     }
 
     public static boolean update(ClassesModule updateModule) {
-        String sql = "UPDATE classes SET "
-                + "classesname = ? ,"
-                + "teacherid = ? "
-                + "WHERE classesid = ?";
+        String sql = "UPDATE class SET "
+                + "className = ? ,"
+                + "WHERE classNo = ?";
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, updateModule.getName());
-             stmt.setString(2, updateModule.getTeacherId());
-            stmt.setString(3, updateModule.getId());
+            stmt.setString(1, updateModule.getClassNo());
+            stmt.setString(2, updateModule.getClassNo());
 
             int rowUpdated = stmt.executeUpdate();
 
