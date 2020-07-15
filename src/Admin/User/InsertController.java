@@ -72,6 +72,12 @@ public class InsertController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         ObservableList<UserModule> datas = UserModule.selectAll();
         System.out.println(datas);
+        try {
+            UserModule user = UserModule.getDetailUser("bRMs");
+            cbRole.getSelectionModel().select((UserModule) user);
+        } catch (SQLException ex) {
+            Logger.getLogger(InsertController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 //        Set<String> listUser = new HashSet<String>();
 //        datas.forEach((data) -> { 
 //            listUser.add(data.getValueUserId());
@@ -83,12 +89,13 @@ public class InsertController implements Initializable {
         cbRole.disableProperty();
         cbRole.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<UserModule>() {
             @Override
-            public void changed(ObservableValue<? extends UserModule> arg0, UserModule arg1, UserModule arg2) {
-                if (arg2 != null) {
-                    System.out.println("Selected employee: " + arg2.getValueUserId());
+            public void changed(ObservableValue<? extends UserModule> arg0, UserModule oldValue, UserModule newValue) {
+                if (newValue != null) {
+                    System.out.println("Selected UserId: " + newValue.getValueUserId());
                 }
             }
         });
+        
 //        cbRole.getItems().addAll("Teacher", "Student");
         tfFirstName.setText("Vương");
         tfLastName.setText("Lực");
@@ -162,7 +169,7 @@ public class InsertController implements Initializable {
         try {            
             while( true ){
                 String userId = randomAlphaNumeric(4);
-                if( !UserModule.getDetailUser(userId) ){
+                if( UserModule.getDetailUser(userId) == null ){
                     user.setValueUserId(userId);
                     break;
                 }                

@@ -165,24 +165,33 @@ public class UserModule {
         return users;
     }
     
-    public static boolean getDetailUser(String userId) throws SQLException{
+    public static UserModule getDetailUser(String userId) throws SQLException{
         String query  = "SELECT * FROM users where userId = ?"; 
         try(
             Connection conn = DbService.getConnection();
             PreparedStatement stmt
             = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             stmt.setString(1, userId);
-            TeachersModule teacher = new TeachersModule();
+            UserModule users = new UserModule();
             ResultSet rs = stmt.executeQuery(); 
             boolean check = false;
             while (rs.next()) { 
-                check = true; 
+                UserModule m = new UserModule();
+                m.setValueUserId(rs.getString("userId"));
+                m.setValueFirstName(rs.getString("firstname"));
+                m.setValueLastName(rs.getString("lastname"));
+                m.setValueEmail(rs.getString("email"));
+                m.setValuePassWord(rs.getString("password"));
+                m.setValueRole(rs.getString("role"));
+
+                users = m;
+//                user.firstname = teacher; 
             } 
-            return check;
+            return users;
         } catch (Exception e) {
             System.err.println("Lỗi: "+ e.getMessage());
-            return false;
-        }
+//            return false;
+            return null;        }
         
     }
     
@@ -301,7 +310,22 @@ public class UserModule {
     }
     @Override
     public String toString() {
-        return userId + " (name:" + firstname + ")";
+        return firstname.get() + " " + lastname.get();
     }
-
+    
+    @Override
+    public boolean equals(Object object) {
+        String otherTCountryCode = "";
+        if (object instanceof UserModule) {
+            otherTCountryCode = ((UserModule)object).getValueFirstName() + " " + ((UserModule)object).getValueLastName();
+        } else if(object instanceof String){
+            otherTCountryCode = (String)object;
+        } else {
+            return false;
+        }
+        if (((this.firstname.get() +" "+ this.lastname.get()) == null && otherTCountryCode != null) || ((this.firstname.get() +" "+ this.lastname.get()) != null && !(this.firstname.get() +" "+ this.lastname.get()).equals(otherTCountryCode))) {
+            return false;
+        }
+        return true;  
+    }
 }
