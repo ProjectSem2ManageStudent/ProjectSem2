@@ -314,16 +314,23 @@ public class UserModule {
     }
     
     @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (userId.get() != null ? userId.get().hashCode() : 0);
+        return hash;
+    }
+    
+    @Override
     public boolean equals(Object object) {
-        String otherTCountryCode = "";
+        String userActive;  
         if (object instanceof UserModule) {
-            otherTCountryCode = ((UserModule)object).getValueFirstName() + " " + ((UserModule)object).getValueLastName();
+            userActive = ((UserModule)object).getValueUserId();
         } else if(object instanceof String){
-            otherTCountryCode = (String)object;
+            userActive = (String)object;
         } else {
             return false;
         }
-        if (((this.firstname.get() +" "+ this.lastname.get()) == null && otherTCountryCode != null) || ((this.firstname.get() +" "+ this.lastname.get()) != null && !(this.firstname.get() +" "+ this.lastname.get()).equals(otherTCountryCode))) {
+        if ( (this.userId.get() == null && userId != null) || (this.userId.get() != null && !this.userId.get().equals(userActive)) ) {
             return false;
         }
         return true;  

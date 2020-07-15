@@ -73,7 +73,7 @@ public class InsertController implements Initializable {
         ObservableList<UserModule> datas = UserModule.selectAll();
         System.out.println(datas);
         try {
-            UserModule user = UserModule.getDetailUser("bRMs");
+            UserModule user = UserModule.getDetailUser("QUBF");
             cbRole.getSelectionModel().select((UserModule) user);
         } catch (SQLException ex) {
             Logger.getLogger(InsertController.class.getName()).log(Level.SEVERE, null, ex);
@@ -96,7 +96,6 @@ public class InsertController implements Initializable {
             }
         });
         
-//        cbRole.getItems().addAll("Teacher", "Student");
         tfFirstName.setText("Vương");
         tfLastName.setText("Lực");
         tfEmail.setText("vuongluc2000@gmail.com");
@@ -196,18 +195,19 @@ public class InsertController implements Initializable {
 
     @FXML
     void btnSaveClick(ActionEvent event) throws SQLException {
-        if(validateForm()){            
-            UserModule data = getData();
-            if(UserModule.insert(data)){
-                this.showAlert("Thêm mới thành công!");
-                this.resetForm();
-            }
-
-//            if(UserModule.update(data)){
-//                this.showAlert("Cập nhật thành công!");
+//        if(validateForm()){            
+//            UserModule data = getData();
+//            if(UserModule.insert(data)){
+//                this.showAlert("Thêm mới thành công!");
 //                this.resetForm();
 //            }
-        }
+//
+////            if(UserModule.update(data)){
+////                this.showAlert("Cập nhật thành công!");
+////                this.resetForm();
+////            }
+//        }
+        System.out.println(cbRole.getSelectionModel().getSelectedItem().getValueUserId());
     }
 
     @FXML
