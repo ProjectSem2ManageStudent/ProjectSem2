@@ -5,9 +5,17 @@
  */
 package Admin.Class;
 
+import Admin.Teacher.InsertController;
+import static Admin.Teacher.InsertController.randomAlphaNumeric;
 import Module.ClassesModule;
+import Module.TeachersModule;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,7 +30,7 @@ import javafx.scene.control.TextField;
  *
  * @author admin
  */
-public class AddClassController {
+public class AddClassController implements Initializable  {
 
     /**
      * Initializes the controller class.
@@ -72,70 +80,78 @@ public class AddClassController {
         module.setClassName(txtClassName.getText());
         return module;
     }
-    
+
     @FXML
-    void btnAddClick(ActionEvent event) {
-           do {      
-            Validate();
-            if(errors == false) break;
-            else break;
-            
-        } while ( 1 == 1);
+    void btnBackClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void btnResetClick(ActionEvent event) {
         
-        if(errors == true){
-            try {
-                if (classModule == null) { //insert a new book
-                    ClassesModule insertClassModule = exportModuleFromFields();
-                    insertClassModule = ClassesModule.insert(insertClassModule);
-
-                    String msg = " Create new Class successfully! " + insertClassModule.getClassNo();
-                    lbError.setText(msg);
-                } else { //update an existing book
-                    ClassesModule updateClassModule = exportModuleFromFields();
-                    updateClassModule.setClassNo(this.classModule.getClassNo());
-
-                    boolean result = ClassesModule.update(updateClassModule);
-                    if (result) {
-                        lbError.setText("Update Class successfully!");
-                    } else {
-                        lbError.setText("Update Class failed!");
-                    }
-                }
-            } catch (Exception e) {
-                lbError.setText(e.getMessage());
+        resetForm();
+    }
+    
+    private boolean validateForm(){
+        String msg = null;
+        boolean flag = true;
+         if( txtClassNo.getText().trim().isEmpty() ){
+            msg = "Vui lòng nhập mã lớp!";
+            flag = false;
+        }
+        else if ( txtClassNo.getText().length() < 2 ){
+            msg = "Mã lớp học quá ngắn! Vui lòng nhập trên 2 kí tự!";
+            flag = false;
+        }
+        else if( txtClassName.getText().trim().isEmpty() ){
+            msg = "Vui lòng nhập tên lớp!";
+            flag = false;
+        } 
+      
+        lbError.setText(msg);
+        return flag;
+    }
+    private void resetForm(){
+       txtClassNo.setText("");
+       txtClassName.setText("");
+    }
+        
+    @FXML
+    void btnAddClick(ActionEvent event) throws SQLException {
+       if(validateForm()){       
+           
+             ClassesModule data = getData();
+            if(ClassesModule.insert(data)){
+                this.showAlert("Thêm mới thành công!");
+                this.resetForm();
+            }
+            if(ClassesModule.update(data)){
+                this.showAlert("Cập nhật thành công!");
+                this.resetForm();
             }
         }
     }
 
-    @FXML
-    void btnCancelClick(ActionEvent event) {
-        System.exit(0);
+    
+    private ClassesModule getData(){
+        ClassesModule classModule = new ClassesModule();        
+        classModule.setClassNo(txtClassNo.getText());
+        classModule.setClassName(txtClassName.getText());
+        return classModule;
     }
     
-    public void initialize() {
-//        txtClassNo.textProperty().addListener((observable, oldValue, newValue) -> {
-//            validationName();
-//        });
-//        
-//        txtDuration.textProperty().addListener(((observable, oldValue, newValue) -> {
-//            validationDuration();
-//        }));
-//        
+     
+      private void showAlert(String text) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Teacher");
+        alert.setHeaderText(null);
+        alert.setContentText(text); 
+        alert.showAndWait();
     }
-    
-    
-    public void initialize(ClassesModule classModule) {
-        this.classModule = classModule;
-        String msg = "";
-        if (this.classModule == null) { //insert a new book
-            msg = "Create a new module";
-        } else { //update an existing book
-            msg = "Update an existing module";
-            txtClassNo.setText(classModule.getClassNo());
-            txtClassName.setText(classModule.getClassName());
-        }
 
-        lbHeader.setText(msg);
-    }
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+   ObservableList<ClassesModule> data = ClassesModule.selectAll();
+        System.out.println(data);    }
     
 }

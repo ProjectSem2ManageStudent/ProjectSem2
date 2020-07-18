@@ -31,7 +31,7 @@ public class ScheduleModule {
     private StringProperty teacherId;
     private ObjectProperty<LocalDate> startDate;
     private ObjectProperty<LocalDate> endDate;
-    private StringProperty teachingTime;
+    private ObjectProperty<Integer> teachingTime;
 
     
     public ScheduleModule() {
@@ -41,7 +41,7 @@ public class ScheduleModule {
         this.teacherId = new SimpleStringProperty();
         this.startDate = new SimpleObjectProperty<>();
         this.endDate = new SimpleObjectProperty<>();
-        this.teachingTime = new SimpleStringProperty();;
+        this.teachingTime = new SimpleObjectProperty();;
     }
 
     public ObjectProperty<Integer> pgetId() {
@@ -77,11 +77,11 @@ public class ScheduleModule {
     }
 
 
-    public StringProperty pgetTeachingTime() {
+    public ObjectProperty pgetTeachingTime() {
         return teachingTime;
     }
 
-    public void psetTeachingTime(StringProperty teachingTime) {
+    public void psetTeachingTime(ObjectProperty teachingTime) {
         this.teachingTime = teachingTime;
     }
     
@@ -133,11 +133,11 @@ public class ScheduleModule {
         this.endDate.set(endDate);
     }
     
-       public String getTeachingTime() {
+       public Integer getTeachingTime() {
         return teachingTime.get();
     }
 
-    public void setTeachingTime(String teachingTime) {
+    public void setTeachingTime(int teachingTime) {
         this.teachingTime.set(teachingTime);
     }
     
@@ -150,14 +150,16 @@ public class ScheduleModule {
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM schedule");) {
             while (rs.next()) {
+                java.sql.Date startDate = (java.sql.Date) rs.getObject("startDate");
+                java.sql.Date endDate = (java.sql.Date) rs.getObject("endDate");
                 ScheduleModule m = new ScheduleModule();
                 m.setId(rs.getInt("Id"));
                 m.setSubjectId(rs.getString("subjectId"));
                 m.setClassNo(rs.getString("classNo"));
                 m.setTeacherId(rs.getString("teacherId"));
-                m.setStartDate(rs.getDate("startDate").toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                m.setEndDate(rs.getDate("endDate").toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                m.setTeachingTime(rs.getString("teachingTime"));
+                m.setStartDate(startDate.toLocalDate());
+                m.setEndDate(endDate.toLocalDate());
+                m.setTeachingTime(rs.getInt("teachingTime"));
                 modules.add(m);
             }
 
@@ -168,7 +170,7 @@ public class ScheduleModule {
         return modules;
     }
 
-    public static ScheduleModule insert(ScheduleModule newModule) throws SQLException {
+    public static boolean insert(ScheduleModule newModule) throws SQLException {
         String sql = "INSERT into schedule (subjectId,classNo,teacherId,startDate,endDate,teachingTime) "
                 + "VALUES (?,?,?,?,?,?)";
         ResultSet key = null;
@@ -181,20 +183,20 @@ public class ScheduleModule {
             stmt.setString(2, newModule.getClassNo());
             stmt.setString(3, newModule.getTeacherId());
             stmt.setDate(4, java.sql.Date.valueOf(newModule.getStartDate()));
-            stmt.setDate(4, java.sql.Date.valueOf(newModule.getEndDate()));
-            stmt.setString(6, newModule.getTeachingTime());
+            stmt.setDate(5, java.sql.Date.valueOf(newModule.getEndDate()));
+            stmt.setInt(6, newModule.getTeachingTime());
             int rowInserted = stmt.executeUpdate();
 
             if (rowInserted == 1) {
-                return newModule;
+                return true;
             } else {
-                System.err.println("No schedule is inserted");
-                return null;
+                System.err.println("No Schedule is inserted");
+                return false;
             }
 
         } catch (Exception e) {
-//            System.err.println(e);
-            return null;
+            System.err.println(e);
+            return false;
         } finally {
             if (key != null) {
                 key.close();
@@ -243,7 +245,7 @@ public class ScheduleModule {
             stmt.setString(3, updateModule.getTeacherId());
             stmt.setDate(4, java.sql.Date.valueOf(updateModule.getStartDate()));
             stmt.setDate(5, java.sql.Date.valueOf(updateModule.getEndDate()));
-            stmt.setString(6, updateModule.getTeachingTime());
+            stmt.setInt(6, updateModule.getTeachingTime());
             
             int rowUpdated = stmt.executeUpdate();
 
@@ -255,8 +257,12 @@ public class ScheduleModule {
             }
 
         } catch (Exception e) {
-//            System.err.println(e);
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ScheduleModule{" + "Id=" + Id.get() + ", subjectId=" + subjectId.get() + ", classNo=" + classNo.get() + ", teacherId=" + teacherId.get() + ", startDate=" + startDate.get() + ", endDate=" + endDate.get() + ", teachingTime=" + teachingTime.get() + '}';
     }
 }

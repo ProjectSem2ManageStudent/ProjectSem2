@@ -9,32 +9,23 @@ import Module.ClassesModule;
 import Module.ScheduleModule;
 import Module.SubjectModule;
 import Module.TeachersModule;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.net.URL;
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javax.swing.JFormattedTextField;
-import javax.swing.JOptionPane;
 
 /**
  * FXML Controller class
@@ -59,18 +50,17 @@ public class AddScheduleController implements Initializable{
     @FXML
     private DatePicker dpEndDate;
 
-
     @FXML
     private TextField txtTeachingTime;
 
     @FXML
-    private ComboBox<String> cbbSubject;
+    private ComboBox<SubjectModule> cbbSubject;
 
     @FXML
-    private ComboBox<String> cbbClassNo;
+    private ComboBox<ClassesModule> cbbClassNo;
 
     @FXML
-    private ComboBox<String> cbbTeacher;
+    private ComboBox<TeachersModule> cbbTeacher;
 
     @FXML
     private Button btnAdd;
@@ -93,164 +83,150 @@ public class AddScheduleController implements Initializable{
     void selectTeacher(ActionEvent event) {
     }
 
+
+    @FXML
+    void btnBackClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void btnResetClick(ActionEvent event) {
+        resetForm();
+    }
     
     private boolean errors = false;
     private ScheduleModule scheduleModule = null;
 
-    private static final String DATE_PATTERN = "yyyy/MM/dd";
-    public static final DateTimeFormatter DATE_FORMATTER =
-        DateTimeFormatter.ofPattern(DATE_PATTERN);
-
-    private boolean hasParseError = false;
-
-    public boolean hasParseError(){
-        return hasParseError;
-    }
-
-    public String toString(LocalDate localDate) {
-       return DATE_FORMATTER.format(localDate);
-    }
-
-    public LocalDate validateDateTime(String formattedString) {
-
-            try {
-                LocalDate date=LocalDate.from(DATE_FORMATTER.parse(formattedString));
-                hasParseError=false;
-                return date;
-            } catch (DateTimeParseException parseExc){
-                hasParseError=true;
-                return null;
-            }
+   public static final LocalDate LOCAL_DATE (String dateString){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(dateString, formatter);
+        return localDate;
     }
   
     public void initialize(URL url, ResourceBundle rb) {
       ObservableList<SubjectModule> subjectDatas = SubjectModule.selectAll();
-        Set<String> listSubject = new HashSet<String>();
-        subjectDatas.forEach((data) ->{
-            listSubject.add(data.getId());
-        });
-        listSubject.forEach((subjectId) ->{
-            cbbSubject.getItems().add(subjectId);
-        });
+                       cbbSubject.setItems(subjectDatas);
+//        Set<String> listSubject = new HashSet<String>();
+//        subjectDatas.forEach((data) ->{
+//            listSubject.add(data.getId());
+//        });
+//        listSubject.forEach((subjectId) ->{
+//            cbbSubject.getItems().add(subjectId);
+//        });
         
         ObservableList<ClassesModule> ClassNoDatas = ClassesModule.selectAll();
-         Set<String> listClassNo = new HashSet<String>();
-        ClassNoDatas.forEach((data) ->{
-            listClassNo.add(data.getClassNo());
-        });
-        listClassNo.forEach((classNo) ->{
-            cbbClassNo.getItems().add(classNo);
-        });
+                 cbbClassNo.setItems(ClassNoDatas);
+
+//         Set<String> listClassNo = new HashSet<String>();
+//        ClassNoDatas.forEach((data) ->{
+//            listClassNo.add(data.getClassNo());
+//        });
+//        listClassNo.forEach((classNo) ->{
+//            cbbClassNo.getItems().add(classNo);
+//        });
         
         ObservableList<TeachersModule> TeacherDatas = TeachersModule.selectAll();
-         Set<String> listTeacher = new HashSet<String>();
-        TeacherDatas.forEach((data) ->{
-            listTeacher.add(data.getTeacherId());
-        });
-        listTeacher.forEach((teacherId) ->{
-            cbbTeacher.getItems().add(teacherId);
-        });
-//          cbbTeacher.setValue("lvback");
+         cbbTeacher.setItems(TeacherDatas);
+//         Set<String> listTeacher = new HashSet<String>();
+//        TeacherDatas.forEach((data) ->{
+//            listTeacher.add(data.getTeacherId());
+//        });
+//        listTeacher.forEach((teacherId) ->{
+//            cbbTeacher.getItems().add(teacherId);
+//        });
+        
+     
         
     }
-    
-    public void initialize(ScheduleModule scheduleModule) {
-        this.scheduleModule = scheduleModule;
-        String msg = "";
         
-        if (this.scheduleModule == null) { //insert a new book
-            msg = "Create a new module";
-        } else { //update an existing book
-            msg = "Update an existing module";
-            cbbSubject.setValue(scheduleModule.getSubjectId());
-            cbbClassNo.setValue(scheduleModule.getClassNo());
-            cbbTeacher.setValue(scheduleModule.getTeacherId());
-            dpStartDate.setValue(scheduleModule.getStartDate());
-            dpStartDate.setValue(scheduleModule.getEndDate());
-            txtTeachingTime.setText(scheduleModule.getTeachingTime());
+     private boolean validateForm(){
+        String msg = null;
+        boolean flag = true;
+        LocalDate startDate = dpStartDate.getValue();
+        LocalDate endDate = dpEndDate.getValue();
+       if (cbbSubject.getValue() == null){
+           msg = "Vui lòng chọn môn học!";
+           flag = false;
+       }else if (cbbClassNo.getValue() == null){
+           msg = "Vui lòng chọn lớp học!";
+           flag = false;
+       }else if (cbbTeacher.getValue() == null){
+           msg = "Vui lòng chọn giảng viên!";
+           flag = false;
+       }else if(dpStartDate.getValue() == null){
+            msg = "Vui lòng chọn ngày bắt đầu môn!";
+            flag = false;
+       
+       }else if(dpEndDate.getValue() == null){
+            msg = "Vui lòng chọn ngày kết thúc môn!";
+            flag = false;
         }
-
-        lbHeader.setText(msg);
+       else if(startDate.isAfter(endDate) == true){
+            msg = "Ngày kết thúc môn phải sau ngày bắt đầu môn!";
+            flag = false;
+        }
+       else if(txtTeachingTime.getText().trim().isEmpty()){
+            msg = "Vui lòng nhập thời gian học!";
+            flag = false;
+        }else if(!txtTeachingTime.getText().matches("[0-9]+")){
+            msg = "Thời gian học chỉ nhập số!";
+            flag = false;  
+        }
+        lbError.setText(msg);
+        return flag;
     }
-    
   
-    private ScheduleModule exportModuleFromFields() {
-        ScheduleModule module = new ScheduleModule();
-        module.setSubjectId(cbbSubject.getValue().toString());
-        module.setClassNo(cbbClassNo.getValue().toString());
-        module.setTeacherId(cbbTeacher.getValue().toString());
-        module.setStartDate(dpStartDate.getValue());
-        module.setEndDate(dpEndDate.getValue());
-        module.setTeachingTime(txtTeachingTime.getText());
-        return module;
+    private void resetForm(){
+       txtTeachingTime.setText("");
+       cbbSubject.getEditor().clear();
+       cbbClassNo.getEditor().clear();
+       cbbTeacher.getEditor().clear();
+       dpEndDate.getEditor().clear();
+       dpStartDate.getEditor().clear();
     }
-
-    private void ValidateTeachingTime() {
-        String teachingTime = txtTeachingTime.getText();
-        if (teachingTime.isEmpty()) {
-            errors = false;
-            lbError.setText("Teaching time can`t be empty!");
-        } 
-
-        else {
-            errors = true;
-            lbError.setText("");
-        }    
-    }
-    
-    private void ValidateStartDate(){
-     if (dpStartDate.getValue() == null) {
-            lbError.setText("No valid start date!\n");
-        } else {
-            System.out.println(dpStartDate.getValue().toString());
-//            if (!java.util.Date.validEnglishDate(dpStartDate.getValue().toString())) {
-            lbError.setText("No valid from date. Use the format yyyy-MM-dd.\n");
-//        }
+     public static final String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static String randomAlphaNumeric(int count) {
+        StringBuilder builder = new StringBuilder();
+        while (count-- != 0) {
+            int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
         }
+        return builder.toString();
+    }
+    private ScheduleModule getData(){
+        ScheduleModule scheduleModule = new ScheduleModule();        
+        scheduleModule.setSubjectId(cbbSubject.getSelectionModel().getSelectedItem().getId());
+        scheduleModule.setClassNo(cbbClassNo.getSelectionModel().getSelectedItem().getClassNo());
+        scheduleModule.setTeacherId(cbbTeacher.getSelectionModel().getSelectedItem().getTeacherId());
+        scheduleModule.setStartDate(dpStartDate.getValue());
+        scheduleModule.setEndDate(dpEndDate.getValue());
+        scheduleModule.setTeachingTime(Integer.parseInt(txtTeachingTime.getText()) );
+        return scheduleModule;
+    }
+      private void showAlert(String text) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Schedule");
+        alert.setHeaderText(null);
+        alert.setContentText(text); 
+        alert.showAndWait();
     }
     
     @FXML
-    void btnAddClick(ActionEvent event) {
-        do {
-//            ValidateStartDate();
-//        validateDateTime(dpStartDate.getValue().toString());
-        ValidateTeachingTime();
-            if (errors == false) {
-                break;
-            } else {
-                break;
+    void btnAddClick(ActionEvent event) throws SQLException {
+        if(validateForm()){            
+            ScheduleModule data = getData();
+            if(ScheduleModule.insert(data)){
+                this.showAlert("Thêm mới thành công!");
+                this.resetForm();
             }
 
-        } while (1 == 1);
-
-        if (errors == true) {
-            try {
-                if (scheduleModule == null) { //insert a new book
-                    ScheduleModule insertScheduleModule = exportModuleFromFields();
-                    insertScheduleModule = ScheduleModule.insert(insertScheduleModule);
-
-                    String msg = " Create new Schedule successfully!" + insertScheduleModule.getId();
-                    lbError.setText(msg);
-                } else { //update an existing book
-                    ScheduleModule updateScheduleModule = exportModuleFromFields();
-                    updateScheduleModule.setId(this.scheduleModule.getId());
-
-                    boolean result = ScheduleModule.update(updateScheduleModule);
-                    if (result) {
-                        lbError.setText("Update Schedule successfully!");
-                    } else {
-                        lbError.setText("Update Schedule failed!");
-                    }
-                }
-            } catch (Exception e) {
-                lbError.setText(e.getMessage());
-            }
+//            if(ScheduleModule.update(data)){
+//                this.showAlert("Cập nhật thành công!");
+//                this.resetForm();
+//            }
         }
+       
+//System.out.println(startDate.isAfter(endDate) == true);
     }
 
-    @FXML
-    void btnCancelClick(ActionEvent event) {
-        System.exit(0);
-
-    }
 }

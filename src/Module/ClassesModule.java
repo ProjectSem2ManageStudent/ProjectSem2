@@ -51,7 +51,6 @@ public class ClassesModule {
         return classNo.get();
     }
 
-   
     public void setClassNo(String classNo) {
         this.classNo.set(classNo);
     }
@@ -86,8 +85,8 @@ public class ClassesModule {
         return modules;
     }
 
-    public static ClassesModule insert(ClassesModule newModule) throws SQLException {
-        String sql = "INSERT into class (classNo,className) "
+    public static boolean insert(ClassesModule newModule) throws SQLException {
+        String sql = "INSERT into class (classNo,className)"
                 + "VALUES (?,?)";
         ResultSet key = null;
         try (
@@ -99,16 +98,16 @@ public class ClassesModule {
             stmt.setString(2, newModule.getClassName());
             int rowInserted = stmt.executeUpdate();
 
-            if (rowInserted == 1) {
-                return newModule;
+                if (rowInserted == 1) {
+                return true;
             } else {
-                System.err.println("No classes is inserted");
-                return null;
+                System.err.println("No class is inserted");
+                return false;
             }
 
         } catch (Exception e) {
-//            System.err.println(e);
-            return null;
+            System.err.println(e);
+            return false;
         } finally {
             if (key != null) {
                 key.close();
@@ -163,6 +162,34 @@ public class ClassesModule {
 //            System.err.println(e);
             return false;
         }
+    }
+
+      @Override
+    public String toString() {
+        return className.get();
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (classNo.get() != null ? classNo.get().hashCode() : 0);
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object object) {
+        String userActive;  
+        if (object instanceof ClassesModule) {
+            userActive = ((ClassesModule)object).getClassNo();
+        } else if(object instanceof String){
+            userActive = (String)object;
+        } else {
+            return false;
+        }
+        if ( (this.classNo.get() == null && classNo != null) || (this.classNo.get() != null && !this.classNo.get().equals(userActive)) ) {
+            return false;
+        }
+        return true;  
     }
 
 }

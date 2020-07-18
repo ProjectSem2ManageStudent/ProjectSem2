@@ -15,9 +15,9 @@ import java.sql.SQLException;
  */
 public class DbService {
      private static final String USERNAME = "root";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "";
     private static final String CONN_STRING
-            = "jdbc:mysql://localhost/aplearning";
+            = "jdbc:mysql://localhost/projectsem2";
 
     public static Connection getConnection() throws SQLException {
         
