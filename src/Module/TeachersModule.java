@@ -18,6 +18,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -32,7 +36,11 @@ public class TeachersModule {
     private StringProperty phone;
     private ObjectProperty<LocalDate> birthDay;
     private StringProperty userId;
-
+    
+    @OneToOne(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @JoinColumn(name="userId")
+    private UserModule user;
+    
     public TeachersModule() {
         this.teacherId = new SimpleStringProperty();
         this.name = new SimpleStringProperty();
@@ -158,6 +166,7 @@ public class TeachersModule {
     public void setUserId(String userId) {
         this.userId.set(userId);
     }
+    
 
     public static ObservableList<TeachersModule> selectAll() {
         ObservableList<TeachersModule> modules = FXCollections.observableArrayList();
