@@ -22,20 +22,62 @@ import javafx.collections.ObservableList;
  * @author Admin
  */
 public class SubjectModule {
- private StringProperty subjectId;
+        
+     private StringProperty subjectId;
     private StringProperty subjectname;
     private ObjectProperty<Integer> duration;
     private StringProperty prerequisite;
     private ObjectProperty<Integer> semesterId;
 
     public SubjectModule() {
-        this.subjectId = new SimpleStringProperty();;
-        this.subjectname = new SimpleStringProperty();;
-        this.duration = new SimpleObjectProperty<>(null);;
-        this.prerequisite = new SimpleStringProperty();;
-        this.semesterId = new SimpleObjectProperty<>(null);;
+        subjectId = new SimpleStringProperty();;
+        subjectname = new SimpleStringProperty();;
+        duration = new SimpleObjectProperty<>(null);;
+        prerequisite = new SimpleStringProperty();;
+        semesterId = new SimpleObjectProperty<>(null);;
+    }
+    
+    public String getId() {
+        return subjectId.get();
     }
 
+    public String getName() {
+        return subjectname.get();
+    }
+
+    public void setId(String id) {
+        this.subjectId.set(id);
+    }
+
+    public void setName(String name) {
+        this.subjectname.set(name);
+    }
+
+     public Integer getduration() {
+        return duration.get();
+    }
+
+    public void setduration(int id) {
+        this.duration.set(id);
+    }
+    
+     public String getpre() {
+        return prerequisite.get();
+    }
+
+    public void setpre(String id) {
+        this.prerequisite.set(id);
+    }
+    
+     public Integer getsemes() {
+        return semesterId.get();
+    }
+
+    public void setsemes(int id) {
+        this.semesterId.set(id);
+    }
+    
+    
     public ObjectProperty<Integer> getDuration() {
         return duration;
     }
@@ -60,45 +102,6 @@ public class SubjectModule {
         this.semesterId = semesterId;
     }
     
-    
-
-    public String getId() {
-        return subjectId.get();
-    }
-
-    public String getName() {
-        return subjectname.get();
-    }
-
-    public void setId(String id) {
-        this.subjectId.set(id);
-    }
-
-    public void setName(String name) {
-        this.subjectname.set(name);
-    }
-
-     public Integer getduration() {
-        return duration.get();
-    }
-
-    public void setduration(int id) {
-        this.duration.set(id);
-    }
-     public String getpre() {
-        return prerequisite.get();
-    }
-
-    public void setpre(String id) {
-        this.prerequisite.set(id);
-    }
-     public Integer getsemes() {
-        return semesterId.get();
-    }
-
-    public void setsemes(int id) {
-        this.semesterId.set(id);
-    }
     public StringProperty getIdProperty() {
         return this.subjectId;
     }
@@ -131,6 +134,27 @@ public class SubjectModule {
 
         }
         return modules;
+    }
+    
+     public static boolean getDetailSubject(String subjectId) throws SQLException{
+        String query  = "SELECT * FROM teacher where teacherId = ?"; 
+        try(
+            Connection conn = DbService.getConnection();
+            PreparedStatement stmt
+            = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+            stmt.setString(1, subjectId);
+            SubjectModule subject = new SubjectModule();
+            ResultSet rs = stmt.executeQuery(); 
+            boolean check = false;
+            while (rs.next()) { 
+                check = true; 
+            } 
+            return check;
+        } catch (Exception e) {
+            System.err.println("Lỗi: "+ e.getMessage());
+            return false;
+        }
+        
     }
 
     public static SubjectModule insert(SubjectModule newModule) throws SQLException {
@@ -165,14 +189,15 @@ public class SubjectModule {
             }
         }
     }
+  
 
-    public static boolean delete(SubjectModule deleModule) {
+    public static boolean delete(SubjectModule deleteModule) {
         String sql = "DELETE FROM subject WHERE subjectid = ?";
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, deleModule.getId());
+            stmt.setString(1, deleteModule.getId());
 
             int rowDeleted = stmt.executeUpdate();
 
@@ -219,6 +244,33 @@ public class SubjectModule {
 //            System.err.println(e);
             return false;
         }
+    }
+       @Override
+    public String toString() {
+        return subjectname.get();
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (subjectId.get() != null ? subjectId.get().hashCode() : 0);
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object object) {
+        String userActive;  
+        if (object instanceof SubjectModule) {
+            userActive = ((SubjectModule)object).getId();
+        } else if(object instanceof String){
+            userActive = (String)object;
+        } else {
+            return false;
+        }
+        if ( (this.subjectId.get() == null && subjectId != null) || (this.subjectId.get() != null && !this.subjectId.get().equals(userActive)) ) {
+            return false;
+        }
+        return true;  
     }
 
 }

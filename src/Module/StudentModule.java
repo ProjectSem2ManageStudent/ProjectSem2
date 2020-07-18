@@ -300,5 +300,9 @@ public class StudentModule {
         }
     }
 
-}
+    @Override
+    public String toString() {
+return "StudentModule{" + "rollno=" + rollno.get() + ", name=" + name.get() + ", address=" + address.get() + ", email=" + email.get() + ", phone=" + phone.get() + ", birthDay=" + birthDay.get() + ", userId=" + userId.get() + '}';
+    }
 
+}

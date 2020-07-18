@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -28,7 +28,6 @@ import javax.persistence.OneToOne;
  * @author Admin
  */
 public class TeachersModule {
-
     private StringProperty teacherId;
     private StringProperty name;
     private StringProperty address;
@@ -40,7 +39,7 @@ public class TeachersModule {
     @OneToOne(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
     @JoinColumn(name="userId")
     private UserModule user;
-    
+  
     public TeachersModule() {
         this.teacherId = new SimpleStringProperty();
         this.name = new SimpleStringProperty();
@@ -166,7 +165,6 @@ public class TeachersModule {
     public void setUserId(String userId) {
         this.userId.set(userId);
     }
-    
 
     public static ObservableList<TeachersModule> selectAll() {
         ObservableList<TeachersModule> modules = FXCollections.observableArrayList();
@@ -251,10 +249,7 @@ public class TeachersModule {
         }
     }
 
-    @Override
-    public String toString() {
-        return "TeachersModule{" + "teacherId=" + teacherId.get() + ", name=" + name.get() + ", address=" + address.get() + ", email=" + email.get() + ", phone=" + phone.get() + ", birthDate=" + birthDay.get() + ", userId=" + userId.get() + '}';
-    }
+    
 
     public static boolean delete(TeachersModule deleModule) {
         String sql = "DELETE FROM teacher WHERE teacherId = ?";
@@ -313,5 +308,31 @@ public class TeachersModule {
             return false;
         }
     }
-
+     @Override
+    public String toString() {
+        return name.get();
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (teacherId.get() != null ? teacherId.get().hashCode() : 0);
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object object) {
+        String userActive;  
+        if (object instanceof TeachersModule) {
+            userActive = ((TeachersModule)object).getTeacherId();
+        } else if(object instanceof String){
+            userActive = (String)object;
+        } else {
+            return false;
+        }
+        if ( (this.teacherId.get() == null && teacherId != null) || (this.teacherId.get() != null && !this.teacherId.get().equals(userActive)) ) {
+            return false;
+        }
+        return true;  
+    }
 }

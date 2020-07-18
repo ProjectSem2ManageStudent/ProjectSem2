@@ -81,29 +81,29 @@ public class ClassesModule {
         return modules;
     }
 
-    public static ClassesModule insert(ClassesModule newModule) throws SQLException {
-        String sql = "INSERT into class (classNo, className) "
+
+    public static boolean insert(ClassesModule newModule) throws SQLException {
+        String sql = "INSERT into class (classNo,className)"
                 + "VALUES (?,?)";
         ResultSet key = null;
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt
                 = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
-
-            stmt.setString(2, newModule.getClassNo());
-            stmt.setString(3, newModule.getClassName());
+            stmt.setString(1, newModule.getClassNo());
+            stmt.setString(2, newModule.getClassName());
             int rowInserted = stmt.executeUpdate();
 
-            if (rowInserted == 1) {
-                return newModule;
+                if (rowInserted == 1) {
+                return true;
             } else {
-                System.err.println("No classes is inserted");
-                return null;
+                System.err.println("No class is inserted");
+                return false;
             }
 
         } catch (Exception e) {
-//            System.err.println(e);
-            return null;
+            System.err.println(e);
+            return false;
         } finally {
             if (key != null) {
                 key.close();
@@ -135,15 +135,15 @@ public class ClassesModule {
     }
 
     public static boolean update(ClassesModule updateModule) {
-        String sql = "UPDATE classes SET "
-                + "className = ? "
+        String sql = "UPDATE class SET "
+                + "className = ? ,"
                 + "WHERE classNo = ?";
         try (
                 Connection conn = DbService.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);) {
 
-            stmt.setString(1, updateModule.getClassName());
-            stmt.setString(3, updateModule.getClassNo());
+            stmt.setString(1, updateModule.getClassNo());
+            stmt.setString(2, updateModule.getClassNo());
 
             int rowUpdated = stmt.executeUpdate();
 
@@ -158,6 +158,34 @@ public class ClassesModule {
 //            System.err.println(e);
             return false;
         }
+    }
+
+      @Override
+    public String toString() {
+        return classesName.get();
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (classNo.get() != null ? classNo.get().hashCode() : 0);
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object object) {
+        String userActive;  
+        if (object instanceof ClassesModule) {
+            userActive = ((ClassesModule)object).getClassNo();
+        } else if(object instanceof String){
+            userActive = (String)object;
+        } else {
+            return false;
+        }
+        if ( (this.classNo.get() == null && classNo != null) || (this.classNo.get() != null && !this.classNo.get().equals(userActive)) ) {
+            return false;
+        }
+        return true;  
     }
 
 }
