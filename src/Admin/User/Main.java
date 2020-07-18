@@ -26,6 +26,7 @@ public class Main extends Application {
             Scene scene = new Scene(mainScreen);
             primaryStage.setTitle("Users");
             primaryStage.setScene(scene);
+            primaryStage.setResizable(false);
             primaryStage.show();
 //            String password = "lucbeo1234";
 //            boolean valuate = BCrypt.checkpw(password, "$2a$12$irpvpwR3P7r.A4AI4Ujb3unz9zBv.7vMiUXtG0fLKKfHXDAriX/P2");
